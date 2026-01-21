@@ -1,0 +1,1 @@
+{"name": "ultimate-ai-backend","version": "1.0.0","description": "Vercel serverless API for Stack Ultimate AI using Qwen via Hugging Face","main": "api/chat.js","scripts": {"start": "vercel dev","lint": "echo \"no lint configured\""},"engines": {"node": "18.x"},"keywords": ["vercel","huggingface","qwen","chat","stack-ultimate"],"license": "MIT"}
