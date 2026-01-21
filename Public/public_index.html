@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODE_X PRO | Stack Ultimate</title>
+    
+    
+    
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0070f3">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap');
+        
+        body { background: #000; color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; height: 100dvh; display: flex; flex-direction: column; }
+        
+        /* Premium Search Pill - Send Button Inside */
+        .search-area {
+            position: relative;
+            background: #0f0f0f;
+            border: 1px solid #1e1e1e;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            padding: 4px 8px 4px 16px; /* Adjusted for internal button */
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            min-height: 64px;
+        }
+        .search-area:focus-within {
+            border-color: #0070f3;
+            box-shadow: 0 0 40px rgba(0, 112, 243, 0.2);
+            background: #121212;
+        }
+
+        .kivy-input {
+            flex: 1; background: transparent; border: none; outline: none;
+            color: #eee; font-size: 16px; padding: 10px;
+        }
+
+        /* Buttons & Icons */
+        .icon-btn {
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; cursor: pointer; transition: 0.3s; color: #555;
+        }
+        .icon-btn:hover { color: #0070f3; background: rgba(0, 112, 243, 0.1); }
+        
+        .send-pill-btn {
+            width: 44px; height: 44px; background: #0070f3; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.3s; flex-shrink: 0;
+        }
+        .send-pill-btn:hover { transform: scale(1.05); background: #0056b3; }
+
+        /* Responsive Splash */
+        #splash { background: #000; transition: opacity 0.8s ease; }
+        .bar-container { width: 200px; height: 2px; background: #111; border-radius: 10px; overflow: hidden; margin-top: 24px; }
+        .bar { height: 100%; background: #0070f3; width: 0%; animation: load 2s forwards; }
+        @keyframes load { to { width: 100%; } }
+
+        /* Code Block Styling */
+        .code-container { position: relative; margin-top: 10px; width: 100%; }
+        .copy-btn {
+            position: absolute; top: 10px; right: 10px;
+            padding: 6px 12px; font-size: 11px; font-weight: 800;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; color: #888; cursor: pointer; z-index: 10;
+        }
+
+        .greeting-text {
+            font-size: clamp(1.5rem, 5vw, 2.8rem); font-weight: 800;
+            background: linear-gradient(90deg, #fff, #0070f3);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="flex flex-col">
+
+    <div id="splash" class="fixed inset-0 z-[100] flex flex-col items-center justify-center p-6 text-center">
+        <h1 class="text-blue-500 text-4xl md:text-6xl font-black italic tracking-tighter">CODE_X PRO</h1>
+        <p class="text-blue-400 text-[10px] md:text-xs tracking-[0.5em] mt-3 font-light">STACK ULTIMATE</p>
+        <div class="bar-container">
+            <div class="bar"></div>
+        </div>
+    </div>
+
+    <header class="p-4 md:p-6 flex justify-between items-center bg-black/80 backdrop-blur-md border-b border-white/5">
+        <div class="font-black italic text-xl md:text-2xl text-blue-500 tracking-tighter">CODE_X PRO</div>
+        <div id="mute-btn" class="icon-btn" onclick="toggleMute()">
+            <svg id="vol-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+        </div>
+    </header>
+
+    <main id="chat-box" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+        <div id="ai-welcome" class="mt-20 md:mt-32 text-center mx-auto max-w-2xl">
+            <h2 id="typewriter" class="greeting-text"></h2>
+        </div>
+    </main>
+
+    <footer class="p-4 md:p-8 bg-black">
+        <div class="search-area">
+            <div id="mic-btn" class="icon-btn" onclick="startMic()">
+                <svg class="w-5 h-5 md:w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+            </div>
+            <input type="text" id="user-input" class="kivy-input" placeholder="Message CODE_X PRO..." autocomplete="off">
+            <button onclick="sendMessage()" class="send-pill-btn">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            </button>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script>
+        // Speech & Mic Logic (Same as your original)
+        let isMuted = false;
+        const synth = window.speechSynthesis;
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            document.getElementById('vol-icon').style.color = isMuted ? '#ff4444' : '#555';
+            if (isMuted) synth.cancel();
+        }
+
+        function speak(text) {
+            if (isMuted) return;
+            const cleanText = text.replace(/```[\s\S]*?```/g, "I have generated the code block for you.");
+            const utter = new SpeechSynthesisUtterance(cleanText);
+            utter.rate = 1.0;
+            synth.speak(utter);
+        }
+
+        function startMic() {
+            recognition.start();
+            document.getElementById('mic-btn').classList.add('text-red-500');
+            recognition.onresult = (e) => {
+                document.getElementById('user-input').value = e.results[0][0].transcript;
+                document.getElementById('mic-btn').classList.remove('text-red-500');
+            };
+            recognition.onerror = () => document.getElementById('mic-btn').classList.remove('text-red-500');
+        }
+
+        const greeting = "Hello! What will you like us to build today?";
+        function typeGreeting(idx = 0) {
+            if (idx < greeting.length) {
+                document.getElementById("typewriter").innerHTML += greeting.charAt(idx);
+                setTimeout(() => typeGreeting(idx + 1), 40);
+            } else { speak(greeting); }
+        }
+
+        window.onload = () => {
+            setTimeout(() => {
+                document.getElementById('splash').style.opacity = '0';
+                setTimeout(() => { document.getElementById('splash').remove(); typeGreeting(); }, 800);
+            }, 2500);
+        };
+
+        function copyCode(btn, code) {
+            navigator.clipboard.writeText(code);
+            btn.innerText = "COPIED!";
+            setTimeout(() => btn.innerText = "COPY", 2000);
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+            if (!input.value.trim()) return;
+
+            const welcome = document.getElementById('ai-welcome');
+            if(welcome) welcome.remove();
+
+            const userText = input.value;
+            chatBox.innerHTML += `<div class="w-full flex justify-end mb-4"><div class="bg-blue-600/10 border border-blue-500/30 p-4 px-6 rounded-[24px] rounded-tr-none text-md max-w-[85%]">${userText}</div></div>`;
+            input.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const res = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: userText })
+                });
+                const data = await res.json();
+                
+                const formattedReply = data.reply.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
+                    return `<div class="code-container">
+                        <button class="copy-btn" onclick="copyCode(this, \`${code.trim().replace(/`/g, '\\`')}\`)">COPY</button>
+                        <pre class="rounded-xl overflow-hidden"><code class="language-${lang || 'javascript'}">${code.trim()}</code></pre>
+                    </div>`;
+                });
+
+                chatBox.innerHTML += `
+                    <div class="w-full flex flex-col items-start mb-4">
+                        <span class="text-[10px] text-blue-500 font-black mb-1 tracking-widest uppercase ml-2">CODE_X PRO</span>
+                        <div class="bg-neutral-900 border border-white/5 p-5 rounded-[24px] rounded-tl-none text-md leading-relaxed max-w-[95%] md:max-w-[85%]">
+                            ${formattedReply}
+                        </div>
+                    </div>`;
+                
+                Prism.highlightAll();
+                speak(data.reply);
+            } catch (err) { console.error(err); }
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>
